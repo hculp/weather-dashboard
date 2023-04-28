@@ -16,11 +16,18 @@
     </header>
 
     <main class="container-fluid bg-primary-subtle">
-        <div class="col-3 d-flex-inline m-2 p-2 bg-body-secondary">
-            <h2 class="text-justify-center mtb-2">Search for a City:</h2>
-            <input class="w-100 mtb-1 p-2" id= "city-input" type="text" placeholder="Search...">
-            <button class="btn btn-primary w-100 mtb-1 p-2 search" type="submit" value="Submit">Search</button>
-            <hr>
+            <div class="col-3 d-flex-inline m-2 p-2 bg-body-secondary">
+                <h2 class="text-justify-center mtb-2">Search for a City:</h2>
+                <input class="w-100 mtb-1 p-2" id= "city-input" type="text" placeholder="Search...">
+                <button class="btn btn-primary w-100 mtb-1 p-2 search" type="submit" value="Submit">Search</button>
+                <hr>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <ul id="searchHistory" class="list-group">
+                            <!-- append li here li class="list-group-item"-->
+                        </ul>
+                    </div>
+                </div>
         </div>
 
         <div class="col-9 d-flex m-2 p-2">
