@@ -1,4 +1,16 @@
-html,body,header {
+html,body,header,hr {
     margin: 0;
     padding: 0;
+}
+
+.hero {
+    background-image: linear-gradient(blue, purple);
+}
+
+#current-weather {
+    display: none;
+}
+
+#future-weather {
+    display: none;
 }
