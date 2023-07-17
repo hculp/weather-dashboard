@@ -3,7 +3,7 @@ const apiEndpoint = "https://api.openweathermap.org/";
 var currentDay = dayjs().format("M/DD/YYYY");
 var searchBtn = document.querySelector(".btn.btn-primary.search");
 var searchInput = document.querySelector("#city-input");
-var searchHistory = JSON.parse(localStorage.getItem("searchHistory")) || [];
+var searchHistory = JSON.parse(localStorage.getItem("city")) ?? [];
 
 // Function to get current weather conditions
 function currentWeather(city) {
@@ -18,7 +18,15 @@ function currentWeather(city) {
   fetch(apiURL)
     .then(function (response) {
       if (!response.ok) {
-        throw response.json();
+        searchHistory = JSON.parse(localStorage.getItem("city"));
+        searchHistory.pop() ?? [];
+        localStorage.setItem("city", JSON.stringify(searchHistory));
+        $("#current-weather").children().empty();
+        $("#current-weather").hide();
+        $("#insert-five-day").empty();
+        $("#future-weather").hide();
+        $("#searchHistory :last-child").remove();
+        return alert("Error: City not found. Please re-enter city name.");
       }
       return response.json();
     })
@@ -31,7 +39,7 @@ function currentWeather(city) {
       fetch(apiURL)
         .then(function (response) {
           if (!response.ok) {
-            throw response.json();
+            return alert(json(response));
           }
           return response.json();
         })
@@ -57,8 +65,6 @@ function currentWeather(city) {
           humidity.textContent = `Humidity: ${weather.main.humidity}%`;
           $("#current-weather").append(temperature, wind, humidity);
           $("#current-weather").css("display", "block");
-
-          futureForecast(city);
         })
         .catch(function (error) {
           alert(error);
@@ -75,17 +81,30 @@ function futureForecast(city) {
   fetch(fivedayURL)
     .then(function (response) {
       if (!response.ok) {
-        throw response.json();
+        searchHistory = JSON.parse(localStorage.getItem("city"));
+        searchHistory.pop() ?? [];
+        localStorage.setItem("city", JSON.stringify(searchHistory));
+        $("#current-weather").children().empty();
+        $("#current-weather").hide();
+        $("#insert-five-day").empty();
+        $("#future-weather").hide();
+        $("#searchHistory :last-child").remove();
+        loadLastCity();
+        return alert("Error: City not found. Please re-enter city name.");
       }
       return response.json();
     })
     .then(function (futureWeather) {
+      if (futureWeather === undefined) {
+        return;
+      }
       // Clear prior display
-      $("#future-forecast").empty();
+      $("#insert-five-day").empty();
 
       // Depending on when the api call is made, the order of returned list with dates may change (i.e. call made at 11a.m. returns different list to increment over to get 5day forecast than a apic all made 11p.m.)
       // To avoid having to determine increment amount, a minimum of 8 list items are skipped to get the 5 day forecast no matter what time the request is made (updates occur every 3 hours).
-      for (let i = 0; i < futureWeather.list.length; i += 8) {
+      // For some unknown reason the api starts at the current day just before the last time period (21:00:00), so the first list item is skipped to get the next day (i=1).
+      for (let i = 1; i < futureWeather.list.length; i += 8) {
         // Get date, icon, temperature, wind speed, and humidity for each day
         var date = futureWeather.list[i].dt_txt;
         var dateTime = date.split(" ");
@@ -99,34 +118,37 @@ function futureForecast(city) {
 
         // Create card to display weather conditions
         var card = document.createElement("div");
-        card.setAttribute("class", "card bg-info-subtle text-white");
+        card.setAttribute(
+          "class",
+          "card col-sm-12 col-lg text-white rounded-0"
+        );
         var cardBody = document.createElement("div");
         cardBody.setAttribute("class", "card-body");
         var cardTitle = document.createElement("h5");
-        cardTitle.setAttribute("class", "card-title");
+        cardTitle.setAttribute("class", "card-title text-start");
         cardTitle.textContent = dateFormated;
         var cardIcon = document.createElement("img");
         cardIcon.setAttribute("src", iconURL);
         cardIcon.setAttribute("class", "img-fluid");
         var cardTemp = document.createElement("p");
-        cardTemp.setAttribute("class", "card-text");
+        cardTemp.setAttribute("class", "card-text text-start");
         cardTemp.textContent = `Temp: ${temp}°F`;
         var cardWind = document.createElement("p");
-        cardWind.setAttribute("class", "card-text");
+        cardWind.setAttribute("class", "card-text text-start");
         cardWind.textContent = `Wind: ${wind} MPH`;
         var cardHumidity = document.createElement("p");
-        cardHumidity.setAttribute("class", "card-text");
+        cardHumidity.setAttribute("class", "card-text text-start");
         cardHumidity.textContent = `Humidity: ${humidity}%`;
 
         // Append weather conditions to card
         cardBody.append(cardTitle, cardIcon, cardTemp, cardWind, cardHumidity);
-        console.log(cardBody);
         card.append(cardBody);
-        $("#future-forecast").append(card);
+        $("#insert-five-day").append(card);
       }
 
       // Display 5 day forecast section
-      $("#future-forecast").css("display", "block");
+      $("#future-weather").css("display", "block");
+      $("#five-day").css("display", "block ");
     })
     .catch(function (error) {
       alert(error);
@@ -148,9 +170,8 @@ var findCity = function (event) {
     alert("Please enter a city.");
     return;
   }
-  currentWeather(city);
 
-  if (!searchHistory.includes(city)) {
+  if (!searchHistory.includes(city) ?? searchHistory.length < 1) {
     searchHistory.push(city);
     var searchedCity = $(`
         <li class="list-group-item mtb-2 btn btn-secondary btn-outline-primary">${city}</li>
@@ -158,6 +179,8 @@ var findCity = function (event) {
     $("#searchHistory").append(searchedCity);
   }
   localStorage.setItem("city", JSON.stringify(searchHistory));
+  currentWeather(city);
+  futureForecast(city);
 };
 
 // Event listeners for search button click and enter keypress
@@ -176,18 +199,24 @@ $("#searchHistory").on("click", "li", function () {
 });
 
 // When the page is loaded, the last searched city's weather is displayed.
-var lastCity = JSON.parse(localStorage.getItem("city"));
-if (lastCity) {
-  currentWeather(lastCity[lastCity.length - 1]);
+function loadLastCity() {
+  var lastCity = JSON.parse(localStorage.getItem("city"));
+  if (lastCity) {
+    currentWeather(lastCity[lastCity.length - 1]);
+    futureForecast(lastCity[lastCity.length - 1]);
+  }
 }
+loadLastCity();
 
 // When the clear search button is clicked, the search history is cleared as well as displayed weather.
 // Document ready function is used to ensure that the local storage is checked and loads any existing search history before executing the click event.
 $(document).ready(function () {
   $(".clearBtn").on("click", function () {
-    localStorage.clear();
-    $("#current-weather").empty();
-    $("#future-weather").empty();
+    localStorage.removeItem("city");
+    $("#current-weather").children().empty();
+    $("#current-weather").hide();
+    $("#insert-five-day").empty();
+    $("#future-weather").hide();
     $("#searchHistory").empty();
   });
 });

@@ -1,10 +1,11 @@
-html,body,header,hr {
+html,body,header,h1,hr {
     margin: 0;
     padding: 0;
 }
 
-.hero {
-    background-image: linear-gradient(blue, purple);
+h1 {
+    background-image: linear-gradient(to right, rgba(34, 34, 184, 0.8), rgba(35, 22, 84, 1));
+    background-size: contain;
 }
 
 #current-weather {
@@ -13,4 +14,8 @@ html,body,header,hr {
 
 #future-weather {
     display: none;
+}
+
+.card {
+    background-color: rgb(48, 48, 64);
 }
