@@ -4,7 +4,7 @@
 
 ## Description
 
-This is a weather dashboard created using openweathermap APIs. The APIs used are the Current and 5 day Forecast. When a user searches with a city name, then the current and future five day forecast conditions are displayed for that city. The city is then added to the search history. For each weather conditions displayed, the city name, date, icon of weather confition, temperature, humidity, and speed for both current weather and 5 day forecast. When a user clicks on a city from the search history, the current and future weather conditions display for that city. When a user clears the search history, then all prior searches are removed and the weather conditions are emptied and hidden from display.
+This is a weather dashboard created using openweathermap APIs. The APIs used are the Current and 5 day Forecast. When a user searches with a city name, then the current and future five day forecast conditions are displayed for that city. The city is then added to the search history. For each weather conditions displayed, the city name, date, icon of weather confition, temperature, humidity, and wind speed for both current weather and 5 day forecast. When a user clicks on a city from the search history, the current and future weather conditions display for that city. When a user clears the search history, then all prior searches are removed and the weather conditions are emptied and hidden from display.
 
 ## Table of Contents
 
@@ -20,14 +20,15 @@ This is a weather dashboard created using openweathermap APIs. The APIs used are
 1. To install just clone this repo:
 
 ```
-git clone git@github.com:hculp/SVG-logo-maker.git
+git clone git@github.com:hculp/weather-dashboard.git
 ```
 
 ## Usage
 
-    Just click [this link](https://hculp.github.io/weather-dashboard/) to open the live page, or after cloning the repo open the index.html file locally through VS Code.
+Just click [this link](https://hculp.github.io/weather-dashboard/) to open the live page, or after cloning the repo open the index.html file locally through VS Code.
 
-    Here is a site preview as well. ![weather dashboard site preview](./assets/images/weatherdashboard-preview.png)
+Here is a site preview as well. \
+![weather dashboard site preview](./assets/images/weatherdashboard-preview.png)
 
 ## Contribution
 
